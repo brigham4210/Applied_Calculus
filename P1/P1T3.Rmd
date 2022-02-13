@@ -1,0 +1,125 @@
+---
+title: "Project1 Task3"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(data4led)
+bulb <- led_bulb(1,seed = 6355)
+
+t <- bulb$hours
+y <- bulb$percent_intensity
+```
+
+## The first function is $f_0(x)=a_0$ 
+It is a constant linear function. $a_0 = 100$,
+
+```{r f0}
+f0 <- function(x,a0=0){ a0 + 0*x }
+
+x <- seq(-10,800001,2)
+yM <- f0(x,100)
+
+par(mfrow=c(1,2),mar=c(2,2,3,0.25),oma=rep(0.5,4))
+plot(t,y,xlab="Hour ", ylab="Intensity(%) ", pch=16,main='f0')
+lines(x,yM,col=2)
+plot(t,y,xlab="Hour ", ylab="Intensity(%) ", pch=16, xlim = c(-10,80000),ylim = c(-10,120))
+lines(x,yM,col=2)
+```
+
+According to the plots. The intensity stays as 100. It is not realistic at all.
+
+
+## The second function is $f_1(x)=a_0 + a_1x$ 
+It is a linear function. $a_0 = 100$, $a_1 = 0.001$
+```{r f1}
+f1 <- function(x,a0=0,a1=0){ a0 + a1*x }
+
+x <- seq(-10,800001,2)
+yM <- f1(x,100,0.001)
+
+par(mfrow=c(1,2),mar=c(2,2,3,0.25),oma=rep(0.5,4))
+plot(t,y,xlab="Hour ", ylab="Intensity(%) ", pch=16,main='f1')
+lines(x,yM,col=2)
+plot(t,y,xlab="Hour ", ylab="Intensity(%) ", pch=16, xlim = c(-10,80000),ylim = c(-10,120))
+lines(x,yM,col=2)
+```
+
+According to the plots. The intensity go greater and never become less. It is not realistic at all.
+
+
+## The third function is $f_2(x)=a_0 + a_1x + a_2x^2$, which is a quadratic function 
+$a_0 = 100$, $a_1 = 0.0025$, $a_2 = -0.0000005$.
+```{r f2}
+f2 <- function(x,a0=0,a1=0, a2=0){ a0 + a1*x +a2*x**2}
+
+x <- seq(-10,80000,1)
+yM <- f2(x,a0=100,a1=0.0025,a2= -0.0000005)
+
+par(mfrow=c(1,2),mar=c(2,2,3,0.25),oma=rep(0.5,4))
+plot(t,y,xlab="Hour ", ylab="Intensity(%) ", pch=16,main='f2')
+lines(x,yM,col=2)
+plot(t,y,xlab="Hour ", ylab="Intensity(%) ", pch=16, xlim = c(-10,80000),ylim = c(-10,120))
+lines(x,yM,col=2)
+```
+
+According to the plots. The intensity becomes less after 3000 hours. It seem a little realistic.
+
+
+## The fourth function is $f_3(x)=a_0 + a_1e^{-a2x}$ 
+$a_0 = 108$, $a_1 = -8$, $a_2 = 0.0001$.
+```{r f3}
+f3 <- function(x,a0=0,a1=0, a2=0){ a0 + a1*exp(-(a2*x))}
+
+x <- seq(-10,80000,1)
+yM <- f3(x,a0=108,a1=-8,a2= 0.0001)
+
+par(mfrow=c(1,2),mar=c(2,2,3,0.25),oma=rep(0.5,4))
+plot(t,y,xlab="Hour ", ylab="Intensity(%) ", pch=16,main='f3')
+lines(x,yM,col=2)
+plot(t,y,xlab="Hour ", ylab="Intensity(%) ", pch=16, xlim = c(-10,80000),ylim = c(-10,120))
+lines(x,yM,col=2)
+```
+
+According to the plots. The intensity keeps becoming greater a little bit. But it means the bulb will never die which is not realistic.
+
+
+## The fifth function is $f_4(x)=a_0 + a_1x + a_2ln(0.005x+1)$ 
+$a_0 = 100$, $a_1 = -0.0005$, $a_2 = 1.45$.
+```{r f4}
+f4 <- function(x,a0=0,a1=0,a2=0){ a0 + a1*x + a2*log(0.005*x+1)}
+
+x <- seq(-10,800001,2)
+yM <- f4(x,a0=100,a1=-0.0005,a2=1.45)
+
+par(mfrow=c(1,2),mar=c(2,2,3,0.25),oma=rep(0.5,4))
+plot(t,y,xlab="Hour ", ylab="Intensity(%) ", pch=16,main='f4')
+lines(x,yM,col=2)
+plot(t,y,xlab="Hour ", ylab="Intensity(%) ", pch=16, xlim = c(-10,80000),ylim = c(-10,120))
+lines(x,yM,col=2)
+```
+
+According to the plots. The intensity becoming greater in the first 3000hrs, and it becomes less later. Probably the bulb will die 40000hrs later. This may be the most accurate function we can use.
+
+
+## The last function is $f_5(x)=(a_0+a_1x)*e^{-2a_2x}$ 
+$a_0 = 100$, $a_1 = -0.0025$, $a_2 = 0.0000172$
+```{r f5}
+f5 <- function(x,a0=0,a1=0,a2=0){ (a0 + a1*x)*exp(-2*a2*x)}
+
+x <- seq(-10,800001,2)
+yM <- f5(x,a0=100,a1=-0.0025,a2=-0.0000172)
+
+par(mfrow=c(1,2),mar=c(2,2,3,0.25),oma=rep(0.5,4))
+plot(t,y,xlab="Hour ", ylab="Intensity(%) ", pch=16,main='f5')
+lines(x,yM,col=2)
+plot(t,y,xlab="Hour ", ylab="Intensity(%) ", pch=16, xlim = c(-10,80000),ylim = c(-10,120))
+lines(x,yM,col=2)
+```
+
+According to the plots. The intensity becoming greater in the first 30000hrs, and it becomes less later. Probably the bulb will die 40000hrs later. This may be reasonable, but the curve is not realistic..
+

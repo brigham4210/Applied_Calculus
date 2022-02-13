@@ -1,0 +1,146 @@
+---
+title: "Project1 Task4"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In this file, I will try to find the exact solution, if possible, for where each of six fitted models is at 80% of the initial intensity.
+This means solve the following equations $f_0(t)=80$, $f_1(t)=80$, $f_2(t)=80$, $f_3(t)=80$, $f_4(t)=80$, and $f_5(t)=80$ where $f_0$, $f_1$, $f_2$, $f_3$, $f_4$, and $f_5$ are your fitted functions.
+I will use the uniroot() function in R to find the approximate solution for where each of your six fitted models is at 80% of the initial intensity, $f_i(t)=80$. And the parameter we used for $a_0$, $a_1$ and $a_2$ come from project 3.
+
+
+##First, $f_0(t,a_0 = 100)= a_0 = 80$
+There is no root in this function because the function is always 100.
+```{r f0}
+f0 <- function(x){100+0*x-80}
+x <- seq(-10,800001,2)
+yM <- f0(x) + 80
+plot(x,yM,type="l",xlim = c(-10,80000),ylim = c(-10,120))
+abline(h=80,col = "gray")
+```
+
+We cannot find the bulb life from this function.
+
+
+## Second, $f_1(x,a_0 = 100, a_1 = 0.001)=a_0 + a_1x = 80$ 
+$a_0 = 100$, $a_1 = 0.001$
+There is no root in this function because the function is greater than 100. Because the intensity is increasing in the beginning so I set $a_1 > 0$.
+
+Here is how I got the solution for f1:
+$f_1(x)=100+0.001x=80$  $0.001x=-20$
+$x = -20000$ There is no solution for $f_1(x)$
+```{r f1}
+x <- seq(-10,80000,1)
+f1 <- function(x,a0=100,a1=0.001){ (a0 + a1*x)-80}
+yM <- f1(x) + 80
+plot(x,yM,type="l",xlim = c(-10,80000),ylim = c(-10,120))
+abline(h=80,col = "gray")
+```
+
+We cannot find the bulb life from this function because x needs to be greater than 0, but we found that x = -20000.
+
+
+## Third, $f2(t,a_0 = 100, a_1 = 0.0025, a_2 = -0.0000005)=a_0 + a_1x + a_2x^2 = 80$   
+There is a root in this function which is 9300.735. Because the intensity increase first and drop later so I set $a_2 < 0$.
+Here is how I got the solution for f2:
+$f_2 = 100 + 0.0025x-0.0000005x^2=80$ $20+0.0025x-0.0000005x^2 = 0$
+$x=\frac{-0.0025\pm\sqrt{0.0025^2-4*20(-0.0000005)}}{2*0.0000005}$
+$x=9300.735$ or $x= -4300.735$
+since $x >0$, x = 9300hr
+```{r f2}
+
+interval <- c(5000,10000)
+
+x <- seq(-10,80000,1)
+f2 <- function(x,a0=100,a1=0.0025,a2= -0.0000005){ (a0 + a1*x +a2*x^2)-80}
+yM <- f2(x) + 80
+plot(x,yM,type="l",xlim = c(-10,80000),ylim = c(-10,120))
+abline(h=80,col = "gray")
+
+#Use uniroot to solve
+(my_root <- uniroot(f2, interval)$root)
+
+#Add a vertical line and circle at the root.  
+abline(v=my_root,col = "gray")
+points(my_root,80, col = "red")
+```
+
+
+The bulb life is 9300.735hr according to the function.
+
+
+##Fourth, $f_3(t, a_0 = 108, a_1 = -8, a_2 = 0.0001)=a_0+a_1e^{-a2x} = 80$
+There is no root in this function because the function is always greater than 100.
+Here is how I got the solution for f3:
+$f_3(x)=108-8e^{-0.0001x}=80$  $\frac{28}{8}= e^{-0.0001x}$
+$ln3.5=-0.0001x$  $x=-12527.63$(not in the domain)
+there is no solution for $f_3(t)$
+```{r f3}
+
+interval <- c(0,100000)
+
+x <- seq(-10,80000,1)
+f3 <- function(x,a0=108,a1=-8,a2= 0.0001){ ( a0 + a1*exp(-(a2*x)))-80}
+
+plot(x,f3(x)+80,type="l",xlim = c(-10,80000),ylim = c(-10,120))
+abline(h=80,col = "gray")
+```
+
+We cannot find the bulb life from this function.
+
+
+## Fifth, $f_4(t, a_0 = 100, a_1 = -0.0005, a_2 = 1.45)=a_0 + a_1x + a_2ln(0.005x+1) = 80$ 
+There is a root in this function which is 56370.27
+Here is how I got the solution for f4:
+$f_4(x)=100-0.005x+1.45ln(0.005x+1) = 80$  $20-0.005x+1.45ln(0.005x+1) = 0$
+$x=56370$
+```{r f4}
+
+interval <- c(5000,100000)
+
+x <- seq(-10,80000,1)
+f4 <- function(x,a0=100,a1=-0.0005,a2=1.45){ a0 + a1*x + a2*log(0.005*x+1) -80}
+yM <- f4(x)+80
+plot(x,yM,type="l",xlim = c(-10,80000),ylim = c(-10,120))
+abline(h=80,col = "gray")
+
+#Use uniroot to solve
+(my_root <- uniroot(f4, interval)$root)
+
+#Add a vertical line and circle at the root.  
+abline(v=my_root,col = "gray")
+points(my_root,80, col = "red")
+```
+
+The bulb life is 56370.27hr according to the function.
+
+
+##Sixth, $f_5(t, a_0 = 100, a_1 = -0.0025, a_2 = 0.0000172)=(a_0+a_1x)e^{-2a_2x} = 80$ 
+here is a root in this function which is 27630.22
+Here is how I got the solution for f5:
+$f_5=(100-0.0025x)e^{-2*0.0000172}=80$
+$ln(100-0.0025x)-0.0000344x=ln80$
+$x=27630.22$
+```{r f5}
+
+interval <- c(20000,40000)
+
+x <- seq(-10,80000,1)
+f5 <- function(x,a0=100,a1=-0.0025,a2=-0.0000172){ (a0 + a1*x)*exp(-2*a2*x)-80}
+yM <- f5(x)+80
+plot(x,yM,type="l",xlim = c(-10,80000),ylim = c(-10,120))
+abline(h=80,col = "gray")
+
+#Use uniroot to solve
+(my_root <- uniroot(f5, interval)$root)
+
+#Add a vertical line and circle at the root.  
+abline(v=my_root,col = "gray")
+points(my_root,80, col = "red")
+my_root
+```
+
+The bulb life is 27630.22hr according to the function.

@@ -1,0 +1,186 @@
+---
+title: "Project 1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Background Information:
+In 2008, the US Department of Energy launched the Bright Tomorrow Lighting Prize (or L Prize) to encourage the development of high-efficiency replacement for the incandescent light bulb. To win the prize the bulb needed a lifetime longer than 25,000 hours (almost 3 years).
+
+For this project, we will use 80% of the initial intensity1 as the threshold for determining the lifetime of a light bulb. This means that once the bulb intensity decreases below 80%, we will consider this the life of the bulb (in other words the bulb “burned out”).
+
+The following plot is the given data we are going to use.
+```{r}
+library(data4led)
+bulb <- led_bulb(1, seed=6355)
+x <- bulb$hours
+y <- bulb$percent_intensity
+plot(x,y,pch=16,xlab='Hours',ylab='Intensity(%)',main='Bulb- Hours to the intensity')
+
+```
+
+
+
+# General model:
+Here are six models we will choose, and we will decide which might be realistic.
+
+## The first model is $f_0(x)=100$, 
+which is a constant linear function. This plot shows that the intensity always stays at 100% forever, and it will never die. this model should not be considered. 
+```{r f0}
+library(data4led)
+bulb <- led_bulb(1,seed = 6355)
+
+t <- bulb$hours
+y1 <- bulb$percent_intensity
+
+par(mfrow=c(1,1),mar=c(2,2,3,0.25),oma=rep(0.5,4))
+plot(t,y1,xlab="Hour", ylab="Intensity(%) ", pch=16)
+
+f0 <- function(x,a0=0,a1=0,a2=0){ a0 + a1*x + a2*log(0.005*x+1)}
+
+x <- seq(-10,800001,2)
+yM <- f0(x,a0=100,a1=0,a2=0)
+
+par(mfrow=c(1,2),mar=c(2,2,3,0.25),oma=rep(0.5,4))
+plot(t,y1,xlab="Hour ", ylab="Intensity(%) ", pch=16,main='f0')
+lines(x,yM,col=2)
+plot(t,y1,xlab="Hour ", ylab="Intensity(%) ", pch=16, xlim = c(-10,80000),ylim = c(-10,120))
+lines(x,yM,col=2)
+```
+
+## The second model is $f_1(x)=100 + 0.001x$, 
+which is a linear function. The plot shows that the intensity is always increasing never goes down. The builb will never die and be brighter and brighter. This is not realistic.
+```{r f1}
+library(data4led)
+bulb <- led_bulb(1,seed = 6355)
+
+t <- bulb$hours
+y1 <- bulb$percent_intensity
+
+par(mfrow=c(1,1),mar=c(2,2,3,0.25),oma=rep(0.5,4))
+#plot(t,y1,xlab="Hour", ylab="Intensity(%) ", pch=16)
+
+f1 <- function(x,a0=0,a1=0){ a0 + a1*x }
+
+x <- seq(-10,800001,2)
+yM <- f1(x,a0=100,a1=0.001)
+
+par(mfrow=c(1,2),mar=c(2,2,3,0.25),oma=rep(0.5,4))
+plot(t,y1,xlab="Hour ", ylab="Intensity(%) ", pch=16,main='f1')
+lines(x,yM,col=2)
+plot(t,y1,xlab="Hour ", ylab="Intensity(%) ", pch=16, xlim = c(-10,80000),ylim = c(-10,120))
+lines(x,yM,col=2)
+```
+
+## The third model is $f_2(x)=100 + 0.0025x -0.0000005x^2$, 
+which is a quadratic function. The intensity will reach to the maximum around 2500hrs, and goes down. It increases and drops very dramatically. This plot can be realistic.
+```{r f2}
+library(data4led)
+bulb <- led_bulb(1,seed = 6355)
+
+t <- bulb$hours
+y1 <- bulb$percent_intensity
+
+par(mfrow=c(1,1),mar=c(2,2,3,0.25),oma=rep(0.5,4))
+#plot(t,y1,xlab="Hour", ylab="Intensity(%) ", pch=16)
+
+f2 <- function(x,a0=0,a1=0, a2=0){ a0 + a1*x +a2*x**2}
+
+x <- seq(-10,80000,1)
+yM <- f2(x,a0=100,a1=0.0025,a2= -0.0000005)
+
+par(mfrow=c(1,2),mar=c(2,2,3,0.25),oma=rep(0.5,4))
+plot(t,y1,xlab="Hour ", ylab="Intensity(%) ", pch=16,main='f2')
+lines(x,yM,col=2)
+plot(t,y1,xlab="Hour ", ylab="Intensity(%) ", pch=16, xlim = c(-10,80000),ylim = c(-10,120))
+lines(x,yM,col=2)
+```
+
+## The fourth model is $f_3(x)=100 - 8e^{-0.0001x}$ 
+This plot increases reasonably because it does not increase too fast, but the intensity will never drop which means the bulb never dies, this is not realistic.
+```{r f3}
+library(data4led)
+bulb <- led_bulb(1,seed = 6355)
+
+t <- bulb$hours
+y1 <- bulb$percent_intensity
+
+par(mfrow=c(1,1),mar=c(2,2,3,0.25),oma=rep(0.5,4))
+#plot(t,y1,xlab="Hour", ylab="Intensity(%) ", pch=16)
+
+f3 <- function(x,a0=0,a1=0, a2=0){ a0 + a1*exp(-(a2*x))}
+
+x <- seq(-10,80000,1)
+yM <- f3(x,a0=108,a1=-8,a2= 0.0001)
+
+par(mfrow=c(1,2),mar=c(2,2,3,0.25),oma=rep(0.5,4))
+plot(t,y1,xlab="Hour ", ylab="Intensity(%) ", pch=16,main='f3')
+lines(x,yM,col=2)
+plot(t,y1,xlab="Hour ", ylab="Intensity(%) ", pch=16, xlim = c(-10,80000),ylim = c(-10,120))
+lines(x,yM,col=2)
+```
+
+## The fifth model is $f_4(x)=100 - 0.0005x+1.45ln(0.005x+1)$. 
+The intensity will increase dramatically in the beginning, and drop slowly around 2000hrs later. This model can be shown that this is a good bulb because it can last for a long time.
+```{r f4}
+library(data4led)
+bulb <- led_bulb(1,seed = 6355)
+
+t <- bulb$hours
+y1 <- bulb$percent_intensity
+
+par(mfrow=c(1,1),mar=c(2,2,3,0.25),oma=rep(0.5,4))
+#plot(t,y1,xlab="Hour", ylab="Intensity(%) ", pch=16)
+
+f4 <- function(x,a0=0,a1=0,a2=0){ a0 + a1*x + a2*log(0.005*x+1)}
+
+x <- seq(-10,800001,2)
+yM <- f4(x,a0=100,a1=-0.0005,a2=1.45)
+
+par(mfrow=c(1,2),mar=c(2,2,3,0.25),oma=rep(0.5,4))
+plot(t,y1,xlab="Hour ", ylab="Intensity(%) ", pch=16,main='f4')
+lines(x,yM,col=2)
+plot(t,y1,xlab="Hour ", ylab="Intensity(%) ", pch=16, xlim = c(-10,80000),ylim = c(-10,120))
+lines(x,yM,col=2)
+```
+
+## The last function is $f_5(x)=(100-0.0025x)*e^{-0.0000344}$ 
+This plot shows that the intensity increases slowly at the beginning but drop dramatically after around 10000hrs. It lasts a good amount of time. This plot probably said the opposite story to the last plot, but both are realistic enough.
+```{r f5}
+library(data4led)
+bulb <- led_bulb(1,seed = 6355)
+
+t <- bulb$hours
+y1 <- bulb$percent_intensity
+
+par(mfrow=c(1,1),mar=c(2,2,3,0.25),oma=rep(0.5,4))
+#plot(t,y1,xlab="Hour", ylab="Intensity(%) ", pch=16)
+
+f5 <- function(x,a0=0,a1=0,a2=0){ (a0 + a1*x)*exp(-2*a2*x)}
+
+x <- seq(-10,800001,2)
+yM <- f5(x,a0=100,a1=-0.0025,a2=-0.0000172)
+
+par(mfrow=c(1,2),mar=c(2,2,3,0.25),oma=rep(0.5,4))
+plot(t,y1,xlab="Hour ", ylab="Intensity(%) ", pch=16,main='f5')
+lines(x,yM,col=2)
+plot(t,y1,xlab="Hour ", ylab="Intensity(%) ", pch=16, xlim = c(-10,80000),ylim = c(-10,120))
+lines(x,yM,col=2)
+```
+
+
+We will not use $f_0$, $f_1$ and $f_3$ because the models just show that the bulb will never die.
+According to the models, we can see $f_2$,$f_4$ and $f_5$ might be realistic. According to the model, the life of bulb can be 9300, 56370 and 27630 hrs.
+
+
+
+I will find that if the model is realistic. If the model shows that the bulb will never die, we would not use it. There are three model could be considered that they could be fitted, but I cannot really know what the best model is because I do not really know the real bulb life. I will need to use more methods or data to find the best model. 
+
+
+From this project, I realized that the parameters matter a lot, so I will use Desmos more frequently. And I also realize that we need to ponder if the function is reasonable. I learn that I need to ponder more.
+
+Self-directed and Organization are I need to improve the most．Without other`s help, I feel like I am not able to learn new things. I need to know how to organize my thought better, so people can understand better.

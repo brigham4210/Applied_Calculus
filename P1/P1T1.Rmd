@@ -1,0 +1,30 @@
+---
+title: "Project1 Task1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Backgraoud information
+
+How long does an LED light bulb last? According to the Bright Tomorrow Lighting Prize (or L Prize) launched by the US Department of Energy in 2008, bulb`s lifetime needs to be longer than 25,000 hours
+
+The initial output is 100% of the original intensity, which means f(0)=100. If the bulb intensity decreases below 80%, we will consider this the life of the bulb.
+The following plot shows the intensity of the bulbs with how many hours they have been used. The hour range is between 0 and 5000.
+
+```{r}
+library(data4led)
+bulb <- led_bulb(1, seed=6355)
+x <- bulb$hours
+y <- bulb$percent_intensity
+plot(x,y,pch=16,xlab='Hours',ylab='Intensity(%)',main='Bulb- Hours to the intensity')
+
+```
+
+In this project, the input of the models is time, t, measured in hours since the bulb is turn on. The output of the models is bulb intensity, f(t), measured as a percent of initial bulb intensity.
+
+According to the plot, all of the intensity of the bulbs are higher than the initial output. 
+From 0 to 2000, the intensity seems to be increasing. From 2000 to 5000, the intensity seems to be constant. 
+If we can have more data to know when the intensity start decreasing, we can have more confidence guessing the lifetime of the bulb. In my conjecture, if the intensity does not decrease before 20000 hours, it may have a chance to be considered as a good bulb.
