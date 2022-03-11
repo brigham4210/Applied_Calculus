@@ -1,0 +1,96 @@
+---
+title: "P3Task2"
+author: "Brigham Chen"
+date: "3/11/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+We will Find the Expected Value and Variance of each Stochastic Variable to Fit the Model in this task.
+
+Here are the Expected Value and Variance of each Function that I got from the Mathematica:
+![f0](C:\Users\brigh\Downloads\f0.png)
+ For $f_0$, the expected value is $\frac{a+b}{2}$, and the variance is $\frac{(a-b)^2}{12}$ 
+![f1](C:\Users\brigh\Downloads\f1.png)
+ For $f_1$, the expected value is μ, and the variance is $σ^2$
+![f2](C:\Users\brigh\Downloads\f2.png)
+ For $f_2$, the expected value is $\frac{α}{β}$, and the variance is $\frac{α}{β^2}$
+![f3](C:\Users\brigh\Downloads\f3.png)
+ For $f_3$, the expected value is $\frac{1}{λ}$, and the variance is $\frac{1}{λ^2}$
+
+
+Find the a & b of $f_0$:
+$EV = 2.79164 = \frac{a+b}{2}$
+
+$Var = 10.97915 = \frac{(a-b)^2}{12}$
+The picture below is how we find the a & b
+
+$\frac{a+b}{2}=EV$, $\frac{(b-a)^2}{12}=Var$
+$b=2EV-a$, $\frac{(2EV-2a)^2}{12}=Var$
+$a=\frac{\sqrt{12Var}-2EV}{-2} $
+
+
+```{r}
+EV <- 2.79164
+V <- 10.97915
+
+a<- (sqrt(12*V)-2*EV)/-2
+b <- 2*EV - a
+a
+b
+b-a
+```
+```{r}
+f0 <- function(x,a,b){1/(b-a)}
+library(data4soils)
+Ng <- cfbp_fpjuliet$ng
+hist(Ng, probability = TRUE,main = "Fitted distribution" ,breaks = 100)
+f0 <- function(x,a,b){0*x+1/(b-a)}
+
+x <- seq(0,20,2)
+lines(x,f0(x,-2.947476,8.530756),col=2)
+```
+
+According to the code, we found that a = -2.947476, b = 8.530756
+The best fitted model for f0: 
+\begin{align*}
+f_0(x;a,b) = \frac{1}{b-a} = \frac{1}{11.47823}
+\end{align*}
+
+This line is flat and it does not fit the plot at all. So this is not a good model
+
+=
+=
+=
+
+
+Find the λ of f3:
+EV = 2.79164 = 1/λ
+λ = 1/EV
+```{r}
+EV <- 2.79164
+lambda <- 1 / EV
+lambda
+```
+```{r}
+library(data4soils)
+Ng <- cfbp_fpjuliet$ng
+hist(Ng, probability = TRUE,main = "Fitted exponential distribution", breaks = 100)
+f3 <- function(x,l){l*exp(l*(-x))}
+l <- 0.358
+x <- seq(0,100,2)
+lines(x,f3(x,l),col=2)
+```
+
+According to the code, we found that λ = 0.358
+The best fitted model for f3: 
+\begin{align*}
+f_3(x;λ) = λe^{−λx} = 0.358e^{−0.358x}
+\end{align*}
+
+This line kinda follow the pattern. So this is a good model.

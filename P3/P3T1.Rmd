@@ -1,0 +1,111 @@
+---
+title: "P3T1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Background
+
+How much explosive material remains in the soil? The military is concerned about amount of explosives that remain in the soils of training ranges because soldiers are out on the training range and explosive residues are carcinogens (they cause cancer). We will be collecting a representative sample from the training ranges and continue to work on developing, refining, and validating sampling methods.
+
+The histogram is below, and we also have the value of the mean and the variance of the data. 
+```{r}
+library(data4soils)
+Ng <- cfbp_fpjuliet$ng
+hist(Ng, probability = TRUE)
+mean(Ng) # EV
+var(Ng)
+```
+I constructed two plots illustrating what I learned in your parameter exploration of f3:
+
+\begin{align*}
+f_3(x; \lambda) = \lambda e^{-\lambda x}
+\end{align*}
+
+I set λ as 0.3, then I got the following plot.
+```{r}
+library(data4soils)
+Ng <- cfbp_fpjuliet$ng
+hist(Ng, probability = TRUE,main = "Fitted gamma distribution", breaks = 100)
+f3 <- function(x,l){l*exp(l*(-x))}
+l <- 0.3
+x <- seq(0,100,2)
+lines(x,f3(x,l),col=2)
+```
+
+I set λ as 1, then I got the following plot.
+```{r}
+library(data4soils)
+Ng <- cfbp_fpjuliet$ng
+hist(Ng, probability = TRUE,main = "Fitted gamma distribution", breaks = 100)
+f3 <- function(x,l){l*exp(l*(-x))}
+l <- 1
+x <- seq(0,20,2)
+lines(x,f3(x,l),col=2)
+
+```
+To sum up, when λ is greater, the line will look more steep.
+
+Visually fit f2 and f3 to the density histogram of the 100 Nitroglycerin measurements.
+
+For f2:
+
+\begin{align*}
+f_2(x; \alpha,\beta) = \frac{\beta^{\alpha}}{\Gamma(\alpha)}x^{\alpha-1}e^{-\beta x}
+\end{align*}
+
+I found that α=0.7 and β=0.25 might be the be formula.
+
+```{r}
+library(data4soils)
+Ng <- cfbp_fpjuliet$ng
+hist(Ng, probability = TRUE,main = "Fitted normal distribution", breaks = 100)
+f2 <- function(x,a,b){(b^a)/gamma(a)*(x^(a-1))*(exp(-b*x))}
+a <- 0.7
+b <- 0.25
+x <- seq(0,20,2)
+lines(x,f2(x,a,b),col=2)
+```
+
+
+
+For f3:
+
+\begin{align*}
+f_3(x; \lambda) = \lambda e^{-\lambda x}
+\end{align*}
+
+I found that λ=0.75 might be the be formula.
+```{r}
+library(data4soils)
+Ng <- cfbp_fpjuliet$ng
+hist(Ng,probability = TRUE, main = "Fitted gamma distribution", breaks = 100)
+f3 <- function(x,l){l*exp(l*(-x))}
+l <- 0.75
+x <- seq(0,20,2)
+lines(x,f3(x,l),col=2)
+```
+
+We will use the parameter values of your visually fitted f2 model and the rgamma() command to simulate a sample of 25000 random measurements. There are 1159 out of 25000 will have more than 10 mg/kg of explosive. The probability will be 0.04636
+
+```{r}
+set.seed(2021)
+tmp2 <- rgamma(25000, shape = 0.7, rate = 0.25)
+a <-length(which(tmp2 > 10))
+a
+a/25000
+```
+
+
+We will use the parameter values of your visually fitted f3 model and the rexp() command to simulate a sample of 25000 random measurements. There are 14 out of 25000 will have more than 10 mg/kg of explosive. The probability will be 0.00056
+
+```{r}
+set.seed(2021)
+tmp3 <- rexp(25000, rate = 0.75)
+a <-length(which(tmp3 > 10))
+a
+a/25000
+```

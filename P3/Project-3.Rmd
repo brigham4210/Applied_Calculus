@@ -1,0 +1,185 @@
+---
+title: "Project-3"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Background
+
+How much explosive material remains in the soil? The military is concerned about amount of explosives that remain in the soils of training ranges because soldiers are out on the training range and explosive residues are carcinogens (they cause cancer). Collecting a representative sample from the training ranges is difficult to do and researchers are continuing to work on developing, refining, and validating sampling methods. Source
+
+Our work in this project relies on assumptions and use of probability distributions. We will (1) fit probability distributions to data, (2) create simulated samples from those fitted probability distributions, and (3) use the fitted probability distributions to provide probability information about explosive residue in the surface soil of a training range.
+
+“What is the amount of explosives in the soil?”
+I will answer this question by the given data and the model I found.
+
+The Environment Protection Agency (EPA) specifies regulatory levels of Nitroglycerin concentrations for human heath. For this project, we will use 10 mg/kg as the toxicity threshold for surface soil of this training range.
+
+
+The plot below is the given data. This is how much the toxicity contains in the soils.
+```{r}
+library(data4soils)
+Ng <- cfbp_fpjuliet$ng
+hist(Ng, probability = TRUE, breaks = 100)
+mean(Ng) # EV
+var(Ng) # Variance
+```
+
+Introduce the four probability models:
+\begin{align*}
+f_0(x;a,b) = \frac{1}{b-a}
+\end{align*} with −∞ < a < x < b < ∞ (and 0 otherwise)
+This is called the uniform distribution. The probability is the same (uniform) for all measurements between a and b.
+
+\begin{align*}
+f_1(x; \mu,\sigma) = \frac{1}{\sqrt{2\pi \sigma^2}}e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2}
+\end{align*} with μ > 0, σ > 0, and −∞ < x < ∞
+This is called the normal distribution. The probability measurements are near μ is larger than the probability that measurements will be far from μ. This distribution is symmetric and defined for all values of x.
+
+\begin{align*}
+f_2(x; \alpha,\beta) = \frac{\beta^{\alpha}}{\Gamma(\alpha)}x^{\alpha-1}e^{-\beta x}
+\end{align*} with α > 0, β > 0, and x ≥ 0 (and 0 otherwise)
+This is called the gamma distribution.  The function Γ(x) is call the gamma function (NOT the gamma distribution). The gamma distribution and the gamma function are different functions. One way to think about the gamma function is a generalization of the factorial to noninteger values.
+
+\begin{align*}
+f_3(x; \lambda) = \lambda e^{-\lambda x}
+\end{align*} with λ > 0 and x ≥ 0 (and 0 otherwise)
+This is called the exponential distribution. The exponential distribution is often thought of as a “waiting time” model.
+
+
+How to fit the models:
+According to R, the Expected Value = 2.79164, the variance = 10.97915. I use Mathematica to find all of the variables for all of models.
+
+For $f_0$, $EV = 2.79164 = \frac{a+b}{2}$, $Var = 10.97915 = \frac{(b-a)^2}{12}$. I found that a = -2.947476, b = 8.530756.
+
+The fitted model for $f_0$:
+\begin{align*}
+f_0(x;a,b) = \frac{1}{b-a} = \frac{1}{8.530756-(-2.947476)} 
+\end{align*} 
+\begin{align*}
+-2.947476 < x < 8.530756
+\end{align*}
+
+|
+|
+
+For $f_1$, EV = 2.79164 = μ, $Var = 10.97915 = σ^2$. I found that μ = -2.947476, σ = 3.313.
+
+The fitted model for $f_1$:
+\begin{align*}
+f_1(x; \mu,\sigma) = \frac{1}{\sqrt{2\pi \sigma^2}}e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2}  = \frac{1}{\sqrt{2\pi (10.979)}}e^{-\frac{1}{2}\left(\frac{x-2.792}{3.313}\right)^2}
+\end{align*}
+
+|
+|
+
+For $f_2$, $EV = 2.79164$, $Var = 10.97915$. $α = \frac{EV^2}{Var} = 0.709823$, $β = \frac{EV}{Var} = 0.2542674$
+
+The fitted model for $f_2$:
+\begin{align*}
+f_2(x; \alpha,\beta) = \frac{\beta^{\alpha}}{\Gamma(\alpha)}x^{\alpha-1}e^{-\beta x} = \frac{0.254^{0.710}}{\Gamma(0.710)}x^{0.710-1}e^{-0.254 x}
+\end{align*}
+\begin{align*}
+x≥0 
+\end{align*}
+
+|
+|
+
+For $f_3$, $EV = 2.79164 = \frac{1}{λ}$. I found that $λ = 0.3582124$.
+
+The fitted model for $f_3$:
+\begin{align*}
+f_3(x; \lambda) = \lambda e^{-\lambda x} = 0.358e^{−0.358x}
+\end{align*} 
+\begin{align*}
+x≥0 
+\end{align*}
+
+The integrals we will use is to calculate how much is the amount of  
+According to the fitted models $f_0$ and $f_3$, use an integral to calculate the probability that the amount of explosive in a sample will be between 0 mg/kg and 5 mg/kg? 
+
+Integral of $f_0$:
+
+\begin{align*}
+\int_{0}^{5} \frac{1}{11.478232} dx
+\end{align*}
+![f0](C:\Users\brigh\Downloads\f0p.png)
+
+According to $f_0$ calculated by Mathimatica, the probability is 0.435607. There is 0.435607 of the soil will be between 0 mg/kg and 5 mg/kg.
+
+Integral of $f_3$:
+
+\begin{align*}
+\int_{0}^{5} 0.358e^{−0.358x} dx
+\end{align*}
+![f3](C:\Users\brigh\Downloads\f3in.png)
+
+According to $f_3$ calculated by Mathimatica, the probability is 0.833217. There is 0.833217 of the soil will be between 0 mg/kg and 5 mg/kg
+
+
+Determine the 99th percentile of the distribution:
+Here is the part to find the amount to reach the $99_{th}$ percentile.
+
+For $f_1$:
+\begin{align*}
+\int_{-∞}^{x} \frac{1}{\sqrt{2\pi (10.979)}}e^{-\frac{1}{2}\left(\frac{x-2.792}{3.313}\right)^2} dx = 0.99
+\end{align*}
+![f1x](C:\Users\brigh\Downloads\f1x.png)
+
+According to the Mathimatica, the 99th percentile is 10.4992 mg/kg. 99% of the explosive of the soil is under 10.4992 mg/kg.
+
+For $f_3$:
+\begin{align*}
+\int_{0}^{x} 0.358e^{−0.358x}  dx = 0.99
+\end{align*}
+![f1x](C:\Users\brigh\Downloads\f3x.png)
+
+According to the Mathimatica, the 99th percentile is 12.856 mg/kg. 99% of the explosive of the soil is under 12.856 mg/kg.
+
+The probability that the amount of explosive in a sample will be more than 10 mg/kg:
+We will know how much of the explosive of the soil will be more than 10 mg/kg by Mathimatica.
+
+For $f_0$:
+Because x is between -2.947476 and 8.530756, so the probability will be 0. No soil is more than 10 mg/kg.
+
+For $f_1$:
+\begin{align*}
+\int_{10}^{∞} \frac{1}{\sqrt{2\pi (10.979)}}e^{-\frac{1}{2}\left(\frac{x-2.792}{3.313}\right)^2} dx 
+\end{align*}
+![f1p](C:\Users\brigh\Downloads\f1p.png)
+
+According to the Mathimatica, the probability of $f_1$ is 0.0147899. 0.014 of the soil is more than 10 mg/kg.
+
+For $f_2$:
+\begin{align*}
+\int_{10}^{∞} \frac{0.254^{0.710}}{\Gamma(0.710)}x^{0.710-1}e^{-0.254 x} dx 
+\end{align*}
+![f2p](C:\Users\brigh\Downloads\f2p.png)
+
+According to the Mathimatica, the probability of $f_2$ is 0.0429819. 0.043 of the soil is more than 10 mg/kg.
+
+For $f_3$:
+\begin{align*}
+\int_{10}^{∞} 0.358e^{−0.358x} dx 
+\end{align*}
+![f3p](C:\Users\brigh\Downloads\f3p.png)
+
+According to the Mathimatica, the probability of $f_3$ is 0.0278166. 0.028 of the soil is more than 10 mg/kg.
+
+
+
+
+f0 should not be used as a model because the probability will all be the same which is not realistic.
+f1 should not be used as a model because the normal distribution make the most data gather in the middle, but the data gather the most at the beginning, which is not functional.
+
+
+Assumption:
+Since $f_0$ and $f_1$ are not able to be used, we will rely on what we can get from $f_2$ and $f_3$. The amount of explosive soil we got from $f_2$ is 4.3%, and from $f_3$ is 2.8%. My assumption will be the amount may be between 2% and 5%.
+
+reflection:
+I would like to work on Time Management and Meets deadlines. Time is the best resource that I should mange better.
+I found out that I have more motivation to learn new things, and I know how I can do good to give a project done.
